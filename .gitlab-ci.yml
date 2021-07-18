@@ -1,0 +1,46 @@
+stages:
+  - generate_doc
+  - devbrent
+  - stagingbrent
+
+deploy_devbrent:
+  stage: devbrent
+  script:
+    - rsync -aviuzP  ~/resources_develop/ ./
+    - ln -s ~/uploads_develop wp-content/uploads
+    - chmod +x build-develop.sh
+    - ./build-develop.sh
+  environment:
+    name: devbrent
+  only:
+    - develop
+  tags:
+    - devbrent
+
+deploy_stagingbrent:
+  stage: stagingbrent
+  script:
+    - rsync -aviuzP  ~/resources_staging/ ./
+    - ln -s ~/uploads_staging wp-content/uploads
+    - chmod +x build-staging.sh
+    - ./build-staging.sh
+  environment:
+    name: stagingbrent
+  only:
+    - staging
+  tags:
+    - stagingbrent
+
+generate_doc:
+  stage: generate_doc
+  script:
+    - redoc-cli bundle ./wp-content/themes/brent/doc.yml
+    - mv redoc-static.html index.html
+    - scp index.html apistandby@83.223.113.155:~/public_html/brent/
+    - cp index.html ~/api-brent.4you2test.com
+  environment:
+    name: docbrent
+  only:
+    - develop
+  tags:
+    - devbrent

@@ -1,0 +1,2024 @@
+openapi: 3.0.0
+servers:
+  - url: https://dev-brent.4you2test.com/
+    description: Default server
+info:
+  description: The Brent app rest api docs
+  version: 1.0.0
+  title: Brent App
+  x-logo:
+    url: 'https://dev-brent.4you2test.com/wp-content/themes/brent/img/logo.png'
+    altText: Brent App
+tags:
+  - name: user
+    description: Operations related to the app users
+  - name: general_auth
+    description: General Auth Operations
+paths:
+  /wp-json/wpapp/api/v2/user/check_link:
+    post:
+      tags:
+        - user
+      summary: /user/check_link
+      description: Check link is expired or not
+      operationId: check_link
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+                hash:
+                  description: The unique user identifier, hash based on the email with added salt
+                  type: string
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: true if link valid. false if link expired
+  /wp-json/wpapp/api/v2/user/register:
+    post:
+      tags:
+        - user
+      summary: /user/register
+      description: Identify / register the user by it's hash received from email
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+                hash:
+                  description: The unique user identifier, hash based on the email with added salt
+                  type: string
+                password:
+                  description: The password
+                  type: string
+                security_question:
+                  description: The sercurity question the user inputed
+                  type: string
+                security_answer:
+                  description: The security answer the user inputed
+                  type: string
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_token:
+                    type: String
+                    description: User token to use after user log in
+                  user_id:
+                    type: Integer
+                    description: User id.
+                  user_type:
+                    type: String
+                    description: YP/SW or PA.
+                  expiry:
+                    type: Integer
+                    description: Token expire time.
+
+  /wp-json/wpapp/api/v2/user/forgot_password:
+    post:
+      tags:
+        - user
+      summary: /user/forgot_password
+      description: forgot password request
+      operationId: forgot_password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+                email:
+                  description: The user email
+                  type: string
+                security_answer:
+                  description: The security answer the user inputed
+                  type: string
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    description: Return user id
+                  message:
+                    type: String
+                    description: Password reset link send
+  /wp-json/wpapp/api/v2/user/reset_password:
+    post:
+      tags:
+        - user
+      summary: /user/reset_password
+      description: reset password request
+      operationId: reset_password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+                hash:
+                  description: hash value
+                  type: string
+                password:
+                  description: Your new password
+                  type: string
+      responses:
+        '500':
+          description: Server error
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: String
+                    description: Password updated successfully
+  /wp-json/wpapp/api/v2/user/login?auth=username:
+    post:
+      tags:
+        - user
+      summary: /user/login?auth=username
+      description: Login by username
+      operationId: username_login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+                username:
+                  description: The user name
+                  type: string
+                password:
+                  description: password
+                  type: password
+                security_answer:
+                  description: The security answer the user inputed
+                  type: string
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_token:
+                    type: String
+                    description: Random user token
+                  user_id:
+                    type: Integer
+                    description: logged in user id
+                  user_type:
+                    type: String
+                    description: YP/SW or PA
+                  expiry:
+                    type: String
+                    description: Token expire
+  /wp-json/wpapp/api/v2/user/login?auth=email:
+    post:
+      tags:
+        - user
+      summary: /user/login?auth=email
+      description: Login by email
+      operationId: email_login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+                email:
+                  description: The user email
+                  type: string
+                password:
+                  description: password
+                  type: password
+                security_answer:
+                  description: The security answer the user inputed
+                  type: string
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_token:
+                    type: String
+                    description: Random user token
+                  user_id:
+                    type: Integer
+                    description: logged in user id
+                  user_type:
+                    type: String
+                    description: YP/SW or PA
+                  expiry:
+                    type: String
+                    description: Token expire
+  /wp-json/wpapp/api/v2/user/login_password?auth=email:
+    post:
+      tags:
+        - user
+      summary: /user/login_password?auth=email
+      description: Login password email
+      operationId: login_password_email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+                email:
+                  description: The user email
+                  type: string
+                password:
+                  description: password
+                  type: password
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_token:
+                    type: String
+                    description: Random user token
+                  user_type:
+                    type: Integer
+                    description: logged in user id
+                  security_question:
+                    type: String
+                    description: Security question for login with security answer
+                  expiry:
+                    type: String
+                    description: Token expire
+  /wp-json/wpapp/api/v2/user/login_password?auth=username:
+    post:
+      tags:
+        - user
+      summary: /user/login_password?auth=username
+      description: Login password username
+      operationId: login_password_username
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+                username:
+                  description: username
+                  type: string
+                password:
+                  description: password
+                  type: password
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_token:
+                    type: String
+                    description: Random user token
+                  user_type:
+                    type: Integer
+                    description: logged in user id
+                  security_question:
+                    type: String
+                    description: Security question for login with security answer
+                  expiry:
+                    type: String
+                    description: Token expire
+  /wp-json/wpapp/api/v2/user/edit_profile:
+    post:
+      tags:
+        - user
+      summary: /user/edit_profile
+      description: Edit user profile
+      operationId: edit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: user token
+                  type: string
+                avatar:
+                  description: User avatar
+                  type: string
+                first_name:
+                  description: User first name
+                  type: string
+                last_name:
+                  description: User last name
+                  type: string
+                jobTitle:
+                  description: New user role
+                  type: string
+                dob:
+                  description: User date of birth
+                  type: string
+                gender:
+                  description: User gender (m/f)
+                  type: string
+                gender_birth:
+                  description: User birth gender (yes/no)
+                  type: string
+                first_language:
+                  description: User first language
+                  type: string
+                other_languages:
+                  description: Other languages (comma separated)
+                  type: string
+      responses:
+        '400':
+          description: User not found
+        '500':
+          description: Server error
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: String
+                    description: User type (YP, SW or PA)
+  /wp-json/wpapp/api/v2/user/edit_contact:
+    post:
+      tags:
+        - user
+      summary: /user/edit_contact
+      description: Edit user contact
+      operationId: edit contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: user token
+                  type: string
+                phone_number:
+                  description: Phone number
+                  type: number
+                phone_numbers:
+                  description: Comma separated numbers
+                  type: String
+                emails:
+                  description: Comma separated emails
+                  type: String
+                address:
+                  description: User address
+                  type: String
+                city:
+                  description: User city
+                  type: String
+      responses:
+        '400':
+          description: User not found
+        '500':
+          description: Server error
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: String
+                    description: success
+  /wp-json/wpapp/api/v2/user/edit_bio:
+    post:
+      tags:
+        - user
+      summary: /user/edit_bio
+      description: Edit user bio
+      operationId: edit bio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: user token
+                  type: string
+                about_me:
+                  description: About user
+                  type: string
+                allergies:
+                  description: Allergies
+                  type: string
+                achievements:
+                  description: Multiple achievements
+                  type: json
+                care_history:
+                  description: Care history
+                  type: json
+      responses:
+        '400':
+          description: User not found
+        '500':
+          description: Server error
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: String
+                    description: success
+  /wp-json/wpapp/api/v2/user/info:
+    post:
+      tags:
+        - user
+      summary: /user/info
+      description: Get user data
+      operationId: user info
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: user token
+                  type: string
+                yp_id:
+                  description: user token. To be sent ONLY when SW/PA want to get data for a specific YP
+                  type: string
+      responses:
+        '400':
+          description: Cannot find user
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar:
+                    type: String
+                    description: User avatar
+                  first_name:
+                    type: String
+                    description: User first name
+                  last_name:
+                    type: String
+                    description: User last name
+                  dob:
+                    type: String
+                    description: Date of birth
+                  gender:
+                    type: String
+                    description: User gender (m/f)
+                  gender_birth:
+                    type: String
+                    description: User gender birth(yes/no)
+                  first_language:
+                    type: String
+                    description: User first language
+                  other_languages:
+                    type: array
+                    description: List of other languages
+                  phone_number:
+                    type: number
+                    description: phone number
+                  phone_numbers:
+                      type: number
+                      description: phone numbers
+                  emails:
+                    type: array
+                    description: List of emails
+                  address:
+                    type: String
+                    description: User address
+                  about_me:
+                    type: String
+                    description: About user
+                  allergies:
+                    type: String
+                    description: Allergies
+                  achievements:
+                    type: array
+                    description: List of achivements
+                  care_history:
+                    type: array
+                    description: List of care history
+                  sw_pa_email:
+                    type: email
+                    description: If user is YP then return email
+                  type:
+                    type: String
+                    description: Type of user (YP,SW or PA)
+                  supporting_people:
+                    type: array
+                    description: List of supporting people with avatar, first_name, last_name, phone_number, type, id
+  /wp-json/wpapp/api/v2/user/info_full:
+    post:
+      tags:
+        - user
+      summary: /user/info_full
+      description: Get user data, inclusing info, tasks, pathway plans, contacts and badges
+      operationId: user info full
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: user token
+                  type: string
+                yp_id:
+                  description: user token. To be sent ONLY when SW/PA want to get data for a specific YP
+                  type: string
+      responses:
+        '400':
+          description: Cannot find user
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    type: object
+                    description: All user infos, as per /user/info API
+                  tasks:
+                    type: object
+                    description: All tasks, as per /task/get_task API
+                  pathwayPlans:
+                    type: object
+                    description: All pathway plans, as per /pathway/get_pp API
+                  contacts:
+                    type: object
+                    description: All contacts, as per /contact/get_all_contact API
+                  badges:
+                    type: object
+                    description: All badges, as per /badge/get_badges (type = own) API
+  /wp-json/wpapp/api/v2/user/get_young_persons:
+    post:
+      tags:
+        - user
+      summary: /user/get_young_persons
+      description: Get young persons of sw/pa
+      operationId: Get young persons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: user token
+                  type: string
+                nonce:
+                  description: nonce value
+                  type: string
+      responses:
+        '400':
+          description: Cannot find user
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar:
+                    type: String
+                    description: avatar url if exists
+                  first_name:
+                    type: String
+                    description: User first name
+                  last_name:
+                    type: String
+                    description: User last name
+                  registerd:
+                    type: Boolean
+                    description: true if registration finished else false
+                  signed_by:
+                    type: Date
+                    description: create_date
+                  due_date:
+                    type: Date
+                    description: current_pp due date
+                  status:
+                    type: String
+                    description: Status of YP
+  /wp-json/wpapp/api/v2/user/remove_yp_from_swpa:
+    post:
+      tags:
+        - user
+      summary: /user/remove_yp_from_swpa
+      description: Remove yp users from swpa
+      operationId: remove_yp_from_swpa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: sw user token
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                user_id:
+                  description: yp user hash
+                  type: String
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Young person assinged to sw/pa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: String
+                    description: YP user removed successfully
+  /wp-json/wpapp/api/v2/user/add_yp_ids:
+    post:
+      tags:
+        - user
+      summary: /user/add_yp_ids
+      description: Assign multiple YPs to SW/PA (you have to pass yp ids comma separated)
+      operationId: add_yp_ids
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                yp_ids:
+                  description: comma separated yp ids
+                  type: String
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Young person assinged to sw/pa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: String
+                    description: Young person assigned to sw/pa users
+  /wp-json/wpapp/api/v2/user/get_all_yp:
+    post:
+      tags:
+        - user
+      summary: /user/get_all_yp
+      description: Get all yp users and its sw or pa
+      operationId: get_all_yp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token 
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Young person assinged to sw/pa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: Array
+                    description: List of young persons array
+  /wp-json/wpapp/api/v2/user/push_notification:
+    post:
+      tags:
+        - user
+      summary: /user/push_notification
+      description: Send push notification with email and attachement file to all yp users
+      operationId: push_notification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token 
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                due_date:
+                  description: due date in Y-m-d format
+                  type: Date
+                description:
+                  description: description
+                  type: String
+                yp_ids:
+                  description: comma separated yp hash id
+                  type: String
+                file:
+                  description: file data with base64
+                  type: String
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Young person assinged to sw/pa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    description: uploaded file url
+  /wp-json/wpapp/api/v2/task/get_assigned_users:
+    post:
+      tags:
+        - tasks
+      summary: /task/get_assigned_users
+      description: get assigned users
+      operationId: get_assigned_users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                user_id:
+                  description: Get assigned users for this user id (only for SW / PA)
+                  type: String
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: Integer
+                    description: User Id
+                  user_name:
+                    type: String
+                    description: User name with first name and last name
+                  avatar:
+                    type: String
+                    description: avatar url
+  /wp-json/wpapp/api/v2/task/save_task:
+    post:
+      tags:
+        - tasks
+      summary: /task/save_task
+      description: Assign task save to new table
+      operationId: save_task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                pp_id:
+                  description: pp id
+                  type: Integer
+                user_id:
+                  description: user id
+                  type: Integer
+                assignee_id:
+                  description: assignee id
+                  type: Integer
+                due_date:
+                  description: Due date (Y-m-d) format
+                  type: Date
+                description:
+                  description: Description
+                  type: String
+                type:
+                  description: task/event
+                  type: String
+                section:
+                  description: section
+                  type: String
+                badge:
+                  description: Description
+                  type: String
+      responses:
+        '500':
+          description: Server error
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: String
+                    description: success
+  /wp-json/wpapp/api/v2/task/get_task:
+    post:
+      tags:
+        - tasks
+      summary: /task/get_task
+      description: Get tasks created or assigned to the user
+      operationId: get_task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                yp_id:
+                  description: user token. To be sent ONLY when SW/PA want to get data for a specific YP
+                  type: string
+      responses:
+        '404':
+          description: Task not found
+        '400':
+          description: No user found
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: Array
+                    description: Task list
+                  result:
+                    type: String
+                    description: success
+  /wp-json/wpapp/api/v2/task/task_completed:
+    post:
+      tags:
+        - tasks
+      summary: /task/task_completed
+      description: Mark task as completed
+      operationId: task_completed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                ticket_id:
+                  description: record id
+                  type: Integer
+                status:
+                  description: (true/false) true is completed. false is incomplete
+                  type: String
+      responses:
+        '500':
+          description: Server error
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: String
+                    description: success
+  /wp-json/wpapp/api/v2/task/update_task:
+    post:
+      tags:
+        - tasks
+      summary: /task/update_task
+      description: update task
+      operationId: update_task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                task_id:
+                  description: task id hash
+                  type: String
+                user_id:
+                  description: user id hash
+                  type: String
+                due_date:
+                  description: due_date
+                  type: Date
+                description:
+                  description: description
+                  type: String
+                badges:
+                  description: multiple badges comma separated
+                  type: String
+      responses:
+        '400':
+          description: User not found
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: String
+                    description: Task updated successfully
+  /wp-json/wpapp/api/v2/task/delete_task:
+    post:
+      tags:
+        - tasks
+      summary: /task/delete_task
+      description: Delete task
+      operationId: delete_task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                task_id:
+                  description: task id hash
+                  type: String
+      responses:
+        '400':
+          description: User not found
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: String
+                    description: Task deleted successfully
+  /wp-json/wpapp/api/v2/badge/get_badges:
+    post:
+      tags:
+        - badges
+      summary: /badge/get_badges
+      description: Get all active badge
+      operationId: get_badges
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                type:
+                  description: Based on this will return either whole list of badges or badges assigned to an YP (all/own - all by default)
+                  type: String
+                yp_id:
+                  description: user token. To be sent ONLY when SW/PA want to get data for a specific YP
+                  type: string
+      responses:
+        '404':
+          description: No badge found
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  badges:
+                    type: object
+                    description: badges array
+  /wp-json/wpapp/api/v2/badge/assign_badges:
+    post:
+      tags:
+        - badges
+      summary: /badge/assign_badges
+      description: Assign multiple badges to user id
+      operationId: assign_badges
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                user_id:
+                  description: user hash id
+                  type: String
+                badge_ids:
+                  description: comma separated badge ids
+                  type: String
+      responses:
+        '404':
+          description: User not found
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: String
+                    description: Badges assigned to user successfully
+  /wp-json/wpapp/api/v2/badge/delete_badge:
+    post:
+      tags:
+        - badges
+      summary: /badge/delete_badge
+      description: Delete badge for a specific YP
+      operationId: badge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                badge_id:
+                  description: badge hash
+                  type: String
+                yp_id:
+                  description: YP hash
+                  type: String
+      responses:
+        '500':
+          description: Server error
+        '400':
+          description: User not found
+        '200':
+          description: Badge deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  badges:
+                    type: object
+                    description: badges array
+  /wp-json/wpapp/api/v2/pathway/create_pp:
+    post:
+      tags:
+        - pathway
+      summary: /pathway/create_pp
+      description: Create Pathway
+      operationId: create_pp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                user_id:
+                  description: id hash
+                  type: String
+                created_date:
+                  description: Created date
+                  type: Date
+                due_date:
+                  description: Due date
+                  type: date
+      responses:
+        '500':
+          description: Server error
+        '200':
+          description: Pathway plan added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pathway_id:
+                    type: String
+                    description: encrypted pathway id
+  /wp-json/wpapp/api/v2/pathway/delete_pp:
+    post:
+      tags:
+        - pathway
+      summary: /pathway/delete_pp
+      description: Delete pathway plan from pathway hash id
+      operationId: delete_pp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                pathway_id:
+                  description: pathway hash
+                  type: String
+      responses:
+        '500':
+          description: Server error
+        '400':
+          description: User not found
+        '200':
+          description: Pathway plan and related visits deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: String
+                    description: Pathway plan deleted successfully
+  /wp-json/wpapp/api/v2/pathway/update_pp:
+    post:
+      tags:
+        - pathway
+      summary: /pathway/update_pp
+      description: Update Pathway
+      operationId: update_pp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                pathway_id:
+                  description: encrypted pathway id
+                  type: String
+                first_name:
+                  description: First Name
+                  type: String
+                last_name:
+                  description: Last Name
+                  type: String
+                dob:
+                  description: Date of birth
+                  type: Date
+                gender:
+                  description: Gender (m/f)
+                  type: String
+                gender_birth:
+                  description: Gender birth(yes/no)
+                  type: String
+                disabled:
+                  description: Any disability(yes/no)
+                  type: String
+                communication_needs:
+                  description: communication_needs
+                  type: String
+                legal_status:
+                  description: legal_status
+                  type: String
+                leaving_care_status:
+                  description: leaving_care_status
+                  type: String
+                Immigration_status:
+                  description: Immigration_status
+                  type: String
+                who_has_got_my_birth_certificate:
+                  description: who_has_got_my_birth_certificate
+                  type: String
+                birth_certificate:
+                  description: birth_certificate
+                  type: String
+                birth_certificate_filename:
+                  description: birth_certificate_filename
+                  type: String
+                who_has_got_my_passport:
+                  description: who_has_got_my_passport
+                  type: String
+                passport:
+                  description: passport
+                  type: String
+                passport_filename:
+                  description: passport filename
+                  type: String
+                ni_number:
+                  description: ni_number
+                  type: String
+                overall_plan_feeling:
+                  description: number between 1 to 5
+                  type: Integer
+                overall_care_plan:
+                  description: overall_care_plan
+                  type: String
+                attempts:
+                  description: attempts
+                  type: String
+                family_relationship:
+                  description: family_relationship
+                  type: String
+                workers_assessment:
+                  description: workers_assessment
+                  type: String
+                contact_arrangements:
+                  description: contact_arrangements
+                  type: String
+                date_of_visiting:
+                  description: date_of_visiting
+                  type: Date
+                seen_alone:
+                  description: yes or no
+                  type: String
+                comments:
+                  description: comments
+                  type: String
+                outside_statutory:
+                  description: outside_statutory
+                  type: String
+                visits:
+                  description: visit,member_name,professionals_name,date,update_visit:String
+                  type: json array
+                education_feeling:
+                  description: Between 1 to 5
+                  type: Integer
+                education_working_well:
+                  description: education_working_well
+                  type: String
+                education_worried_about:
+                  description: education_worried_about
+                  type: String
+                education_current_establishment:
+                  description: education_current_establishment
+                  type: String
+                education_address:
+                  description: education_address
+                  type: String
+                education_phone:
+                  description: education_phone
+                  type: String
+                education_support_contact:
+                  description: education_support_contact
+                  type: String
+                education_date:
+                  description: education_date
+                  type: Date
+                education_responsible_la:
+                  description: education_responsible_la
+                  type: String
+                education_next_steps:
+                  description: education_next_steps
+                  type: String
+                education_long_term_goals:
+                  description: education_long_term_goals
+                  type: String
+                education_contingency:
+                  description: education_contingency
+                  type: String
+                managing_feeling:
+                  description: Number between 1 to 5
+                  type: Integer
+                managing_working_well:
+                  description: managing_working_well
+                  type: String
+                managing_worried_about:
+                  description: managing_worried_about
+                  type: String
+                managing_next_steps:
+                  description: managing_next_steps
+                  type: String
+                managing_long_term_goals:
+                  description: managing_long_term_goals
+                  type: String
+                managing_contingency:
+                  description: managing_contingency
+                  type: String
+                health_feeling:
+                  description: Number between 1 to 5
+                  type: Integer
+                health_working_well:
+                  description: health_working_well
+                  type: String
+                health_worried_about:
+                  description: health_worried_about
+                  type: String
+                health_next_steps:
+                  description: health_next_steps
+                  type: String
+                health_long_term_goals:
+                  description: health_long_term_goals
+                  type: String
+                health_contingency:
+                  description: health_contingency
+                  type: String
+                money_feeling:
+                  description: Number between 1 to 5
+                  type: Integer
+                money_working_well:
+                  description: money_working_well
+                  type: String
+                money_worried_about:
+                  description: money_worried_about
+                  type: String
+                money_next_steps:
+                  description: money_next_steps
+                  type: String
+                money_long_term_goals:
+                  description: money_long_term_goals
+                  type: String
+                money_contingency:
+                  description: money_contingency
+                  type: String
+                health_allergies:
+                  description: health_allergies
+                  type: String
+                mental_health:
+                  description: mental_health
+                  type: String
+                signed_by_sw:
+                  description: yes or no
+                  type: String
+                date_signed_by_sw:
+                  description: Y-m-d date
+                  type: Date
+                signed_by_yp:
+                  description: yes or no
+                  type: String
+                date_signed_by_yp:
+                  description: Y-m-d date
+                  type: Date
+      responses:
+        '400':
+          description: Error! updating pathway plan
+        '500':
+          description: Server error
+        '200':
+          description: Pathway plan updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: String
+                    description: encrypted pathway id
+  /wp-json/wpapp/api/v2/pathway/override:
+    post:
+      tags:
+        - pathway
+      summary: /pathway/override
+      description: Override Pathway - Used to cancel the Current PP and update Due Date for Next PP
+      operationId: override
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                due_date:
+                  description: Due date
+                  type: String
+                yp_id:
+                  description: YP hash
+                  type: String
+      responses:
+        '500':
+          description: Server error
+        '200':
+          description: Pathway updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: String
+                    description: 
+  /wp-json/wpapp/api/v2/pathway/get_pp:
+    post:
+      tags:
+        - pathway
+      summary: /pathway/get_pp
+      description: Get Pathway
+      operationId: get_pp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                pathway:
+                  description: current,next, past, all
+                  type: String
+      responses:
+        '500':
+          description: Server error
+        '200':
+          description: List of pathway based on current, next, past
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pathways:
+                    type: Array
+                    description: List of pathways
+  /wp-json/wpapp/api/v2/pathway/get_pp_by_id:
+    post:
+      tags:
+        - pathway
+      summary: /pathway/get_pp_by_id
+      description: Get Pathway by id
+      operationId: get_pp_by_id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                pathway_id:
+                  description: pathway hash id
+                  type: String
+      responses:
+        '500':
+          description: Server error
+        '200':
+          description: List of pathway based on current, next, past
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pathways:
+                    type: Array
+                    description: List of pathways
+  /wp-json/wpapp/api/v2/pathway/get_pp_sw_pa:
+    post:
+      tags:
+        - pathway
+      summary: /pathway/get_pp_sw_pa
+      description: Get ALL Pathway Plans for specific SW/PA
+      operationId: get_pp_sw_pa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+      responses:
+        '500':
+          description: Server error
+        '200':
+          description: List of pathway based on current, next, past
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pathways:
+                    type: Array
+                    description: List of pathways
+  /wp-json/wpapp/api/v2/pathway/get_preview:
+    post:
+      tags:
+        - pathway
+      summary: /pathway/get_preview
+      description: Generate pathway pdf with details by pathway hash id
+      operationId: get_preview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                pathway_id:
+                  description: pathway hash id
+                  type: String
+      responses:
+        '400':
+          description: User not found
+        '200':
+          description: Generate pathway pdf with details by pathway hash id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: Pathway pdf link
+                    description: List of pathways
+  /wp-json/wpapp/api/v2/contact/add_contact:
+    post:
+      tags:
+        - contact
+      summary: /contact/add_contact
+      description: Add/update contact
+      operationId: add_contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                user_id:
+                  description: user id
+                  type: String
+                firstName:
+                  description: First Name
+                  type: String
+                lastName:
+                  description: Last Name
+                  type: String
+                avatar:
+                  description: Avatar image
+                  type: String
+                organization:
+                  description: Organization
+                  type: String
+                phone:
+                  description: phone number
+                  type: String
+                phoneNumbers:
+                  description: multiple phone numbers comma separated
+                  type: String
+                email:
+                  description: Email
+                  type: String
+                favorite:
+                  description: 0 or 1
+                  type: Boolean
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Contact added/updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: Contact data
+  /wp-json/wpapp/api/v2/contact/get_all_contact:
+    post:
+      tags:
+        - contact
+      summary: /contact/get_all_contact
+      description: get all contacts and services
+      operationId: get_all_contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                type:
+                  description: (contact/service) based on this value get data. If null then we get both data
+                  type: String
+                yp_id:
+                  description: user token. To be sent ONLY when SW/PA want to get data for a specific YP
+                  type: string
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Contact added/updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: contact and service list based on type
+  /wp-json/wpapp/api/v2/contact/set_quick_contact:
+    post:
+      tags:
+        - contact
+      summary: /contact/set_quick_contact
+      description: Set quick contact
+      operationId: set_quick_contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                id:
+                  description: hash id of post type (contact or service)
+                  type: String
+                user_id:
+                  description: hash user id
+                  type: String
+                isQuickContact:
+                  description: 0 or 1
+                  type: boolean
+                type:
+                  description: contact/service
+                  type: string
+                yp_id:
+                  description: user token. To be sent ONLY when SW/PA want to get data for a specific YP
+                  type: string
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Contact added/updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+                    description: returns quick contact value
+  /wp-json/wpapp/api/v2/contact/delete_my_contact:
+    post:
+      tags:
+        - contact
+      summary: /contact/delete_my_contact
+      description: Delete contact by id
+      operationId: delete_my_contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                id:
+                  description: hash id of contact
+                  type: String
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Contact deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: contact object
+  /wp-json/wpapp/api/v2/contact/report_errors:
+    post:
+      tags:
+        - contact
+      summary: /contact/report_errors
+      description: Report errors
+      operationId: report_errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                service_id:
+                  description: service id hash
+                  type: String
+                message:
+                  description: report error message
+                  type: String
+                date:
+                  description: report error date
+                  type: String
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: String
+                    description: Report error saved successfully
+  /wp-json/wpapp/api/v2/contact/share_contact:
+    post:
+      tags:
+        - contact
+      summary: /contact/share_contact
+      description: Share contact
+      operationId: share_contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+                yp_ids:
+                  description: comma separated yp hash ids
+                  type: String
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: String
+                    description: Contact assigned to multiple YPs
+  /wp-json/wpapp/api/v2/options/list:
+    post:
+      tags:
+        - options
+      summary: /options/list
+      description: List of all articles with article tags
+      operationId: options_list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: User token generated when user log in
+                  type: String
+                nonce:
+                  description: nonce string
+                  type: String
+      responses:
+        '400':
+          description: user not found
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: Array
+                    description: List of articles
+  /wp-json/wpapp/auth/v2/verify:
+    post:
+      tags:
+        - general_auth
+      summary: /wpapp/auth/v2/verify
+      description: Verify the nonce token
+      operationId: nonce
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nonce:
+                  description: Ensure the request is done only once
+                  type: string
+      responses:
+        '400':
+          description: Invalid input
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_valid:
+                    type: Boolean
+                    description: Return true if valid
+  /wp-json/wpapp/auth/v2/nonce:
+    get:
+      tags:
+        - general_auth
+      summary: /auth/v2/nonce
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nonce:
+                    type: string
+                    description: Return random nonce string
+                  root:
+                    type: siteurl/wp-json
+                    description: Return site url
+                  expiry:
+                    type: integer
+                    description: nonce expiration time
